@@ -6,7 +6,7 @@ using namespace std;
 #include <fstream>
 
 /*
-  The following code file is divided into 3 sections
+    The following code file is divided into 3 sections
 
 	1. The interface and code for Class Student  (supplied)
 	2. The interface and code for class StudentEsa  (The interface is supplied. HM1 is writing the code to implement this interface)
@@ -18,7 +18,7 @@ using namespace std;
 class Student
 {   // A VERY simple Student consisting only of the student's ID and Name
     // Both the interface and the code will be located here.
-   
+
 private:
     int sid; // Student ID
     string sname; // Full Name (Ex: KleinmanRon)
@@ -28,7 +28,7 @@ public:
         sid = 0; sname.clear();
     };
     Student(const Student& os) { // Copy constructor - overwrite internal variables
-         sid = os.sid;  sname = os.sname;
+        sid = os.sid;  sname = os.sname;
     };
     Student(int id, string name) { // Initializer Constructor - set internal variables
         sid = id; sname = name;
@@ -36,7 +36,7 @@ public:
     ~Student() { // Default Destructor - clear string
         sname.clear();
     };
-  
+
 
     //Getters 
     string getName() { return (sname); };
@@ -50,7 +50,7 @@ public:
 
 
 ///HM1
-// This is the interface to an "Enhanced" (orderable) Student Array that you will write the routines for.
+//  This is the interface to an "Enhanced" (orderable) Student Array that you will write the routines for.
 //  The methods that you need to support are shown below. 
 //  Note:  Transparent array auto-resizing may need to be done.
 
@@ -67,7 +67,13 @@ class StudentEsa
 
 // ****************  Constructors / Destructor
 
-StudentEsa (int ms);         //  1. Normal Constructor.  Create ESA of this size.  May need to be resized later
+//  1. Normal Constructor.  Create ESA of this size.  May need to be resized later
+    StudentEsa(int ms)
+    {
+        sap = new Student *[cmz = ms];
+        cnum = 0;
+        tp = NULL;
+    }
 
      //  *** The code for this might look like:
      //
@@ -75,23 +81,51 @@ StudentEsa (int ms);         //  1. Normal Constructor.  Create ESA of this size
      //       sap = new Student* [cmz = ms]; // sap points to an array of Student pointers of size cmz
      //       cnum = 0; tp = NULL; // Initialize with no pointers currently in array
      //  }
-       
-StudentEsa ();                // 2. Default Constructor <Comment out, or use some predefined size, and EXPLAIN YOUR CHOICE>
 
-StudentEsa (StudentEsa& sep); // 3. Copy Constructor  (what gets copied and what does not?)
+    // 2. Default Constructor <Comment out, or use some predefined size, and EXPLAIN YOUR CHOICE>
+    StudentEsa()
+    {
+        sap = new Student *[cmz = 10]; // Default size is 10
+        cnum = 0;
+        tp = NULL;
+    }
 
-~StudentEsa();                // 4. Default destructor  (what gets freed up and what does not?)
+    // 3. Copy Constructor  (what gets copied and what does not?)
+    StudentEsa(StudentEsa &sep)
+    {
+        cmz = sep.cmz;
+        cnum = sep.cnum;
+        sap = new Student *[cmz];
+        for (int i = 0; i < snum; i++){
+            sap[i] = new Student(*sep.sap[i]);
+        }
+    };
 
+    // 4. Default destructor  (what gets freed up and what does not?)
+    ~StudentEsa()
+    {
+        for (int i = 0; i < cnum; i++)
+        {
+            delete sap[i];
+        }
+        delete[] sap;
+    }
 
-// ******************* Remaining public functions of the Extended Student Array
+    // ******************* Remaining public functions of the Extended Student Array
 
 	// 1. Return the number of Students in the Collection
-int getSize();
+    int getSize(){
+        return cnum;
+    }
 
 
 	// 2. GET:  Get and return the ptr to the Student at the specified Array Index
 	//          Error if the supplied index >= number of entries.  Return a NULL ptr
-Student* get(int index);
+    Student* get(int index){
+        if ((index < 0) || (index >= cnum))
+            return NULL; // This is a bad index
+        return sap[index];
+    }
 
 	// *** The code for this might look like:
 
@@ -171,7 +205,7 @@ int main()
         cerr << "Error: file " << infileName.c_str()<< "  could not be opened" << endl;
         exit(1);
     }
-      
+
     // First line is array size and # commands to add, every subsequent line is one of:
     //  Append:  A / -1 / StudentID / Student Name
     //  Insert:  I / Index to Insert / StudentID / Student Name
@@ -183,7 +217,7 @@ int main()
 
     inp >> ssize >> nops;
     cout << "Read Array size " << ssize << "  Read # commands " << nops << endl;
-     
+
     Student* stud;    // Array to hold pointer of created student.
     esa = new StudentEsa (ssize);  // Small Student Enhanced Array.  May have to be resized.
     
@@ -200,22 +234,22 @@ int main()
         switch (command)
         { // Convert to command for Extended Array
            case 'A':  // Append
-               stud = new Student(num, name);
-               esa->append(stud);
-               break;
+                stud = new Student(num, name);
+                esa->append(stud);
+                break;
            case 'I':  // Insert
-               stud = new Student(num, name);
-               esa->insert(stud, index);
-               break;
+                stud = new Student(num, name);
+                esa->insert(stud, index);
+                break;
            case 'R':  // Remove (delete)
-               esa->remove(index);
-               break;
+                esa->remove(index);
+                break;
            case 'S': // Store over existing Student
-               stud = new Student(num, name);
-               esa->set(stud, index);
-               break;
-           default:
-               cout << "Illegal Command:  " << command << endl;
+                stud = new Student(num, name);
+                esa->set(stud, index);
+                break;
+            default:
+                cout << "Illegal Command:  " << command << endl;
         }
 
     }
