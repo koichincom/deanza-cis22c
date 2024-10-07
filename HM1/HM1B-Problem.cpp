@@ -1,3 +1,5 @@
+// Koichi Nakayamada
+
 //  This file will contain all the code for Homework 1. Program execution begins and ends here.
 //
 
@@ -14,7 +16,6 @@ using namespace std;
 */
 
 // 1.  ************************ class Student code included here  ***************************
-
 class Student
 {   // A VERY simple Student consisting only of the student's ID and Name
     // Both the interface and the code will be located here.
@@ -96,7 +97,7 @@ class StudentEsa
         cmz = sep.cmz;
         cnum = sep.cnum;
         sap = new Student *[cmz];
-        for (int i = 0; i < snum; i++){
+        for (int i = 0; i < cnum; i++){
             sap[i] = new Student(*sep.sap[i]);
         }
     };
@@ -255,7 +256,7 @@ int main()
     cout << "Using input file " << infileName << endl << endl;
 
     // Create an input file stream to read supplied file
-    std::ifstream inp;
+    ifstream inp;
     inp.open(infileName.c_str());
     if (!inp) {
         cerr << "Error: file " << infileName.c_str()<< "  could not be opened" << endl;
