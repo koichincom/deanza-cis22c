@@ -138,33 +138,89 @@ class StudentEsa
 	// 3. SET: Replace whatever is at the supplied index with the new Student ptr. Return index # on success
 	// Error if the supplied index >= number of entries.  Return -1
 	// <DO NOT Destruct the Student whose ptr is at the supplied index>
-	// 
-int set(Student*, int index);
+	//
+    int set(Student *student, int index)
+    {
+        if ((index < 0) || (index >= cnum))
+            return -1; // This is a pattern of bad index
+        sap[index] = student;
+        return index;
+    }
 
-
-	// 4. INSERT: Insert Student ptr at the supplied index, by first "pushing back" every subsequent element
+    // 4. INSERT: Insert Student ptr at the supplied index, by first "pushing back" every subsequent element
 	//    Error if the supplied index > number of entries.  Return -1
 	//    OK if supplied index == number of entries (equivalent to an append)
 	//    Note:  ESA size increases which may force a reallocation of the array.  Return index # on success
-int insert(Student* nsp, int index);
+    int insert(Student *nsp, int index)
+    {
+        if (index > cnum || index < 0)
+            return -1; // This is a bad index
 
+        // Resize as needed
+        if (cnum >= cmz)
+        {
+            cmz *= 2;
+            tp = new Student *[cmz];
+            for (int i = 0; i < cnum; i++)
+            {
+                tp[i] = sap[i];
+            }
+            delete[] sap;
+            sap = tp;
+        }
 
-	// 5. REMOVE: Delete specified array element by "pulling forward" every subsequent element
-	//    Error if the supplied index >= number of entries.  Return -1.  Else decrement ESA size and return it
-	//    Note: <DO NOT Destruct the Student whose ptr is at the supplied index>
-int remove(int index);
+        // Move elements up
+        for (int i = cnum; i > index; i--)
+        {
+            sap[i] = sap[i - 1];
+        }
+        sap[index] = nsp;
+        cnum++;
+        return index;
+    }
 
+        // 5. REMOVE: Delete specified array element by "pulling forward" every subsequent element
+        //    Error if the supplied index >= number of entries.  Return -1.  Else decrement ESA size and return it
+        //    Note: <DO NOT Destruct the Student whose ptr is at the supplied index>
+    int remove(int index){
+        if ((index < 0) || (index >= cnum))
+            return -1; // This is a bad index
 
-	// 6. APPEND:  Append the ptr to the supplied Student to back of the ESA, bump ESA size
-	//    Return index # of new entry on success, -1 on failure
-	//    Note:  This may force a reallocation of the array.
-int append(Student* nsp);
+        // Move elements down
+        for (int i = index; i < cnum - 1; i++)
+        {
+            sap[i] = sap[i + 1];
+        }
+        cnum--;
+        return cnum;
+    }
 
-
-	// 7. PREPEND: Prepend the ptr to the supplied Student to the front of the ESA, increment ESA size
-	//    Return 0 on success, -1 on failure
-	//    Note:  This may force a reallocation of the array.  
-int prepend(Student* nsp);
+        // 6. APPEND:  Append the ptr to the supplied Student to back of the ESA, bump ESA size
+        //    Return index # of new entry on success, -1 on failure
+        //    Note:  This may force a reallocation of the array.
+    int append(Student *nsp)
+    {
+        if (cnum >= cmz)
+        {
+            cmz *= 2;
+            tp = new Student *[cmz];
+            for (int i = 0; i < cnum; i++)
+            {
+                tp[i] = sap[i];
+            }
+            delete[] sap;
+            sap = tp;
+        }
+        sap[cnum++] = nsp;
+        return cnum - 1;
+    }
+        // 7. PREPEND: Prepend the ptr to the supplied Student to the front of the ESA, increment ESA size
+        //    Return 0 on success, -1 on failure
+        //    Note:  This may force a reallocation of the array.
+    int prepend(Student *nsp)
+    {
+        return insert(nsp, 0);
+    }
 };
 
 // **************************** End class StudentEsa ******************************
