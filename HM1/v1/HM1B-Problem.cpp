@@ -187,6 +187,7 @@ class StudentEsa
         if ((index < 0) || (index >= cnum))
             return -1; // This is a bad index
 
+        delete sap[index]; // Free the memory allocated for the Student pointer at the specified inex
         // Move elements down
         for (int i = index; i < cnum - 1; i++)
         {
@@ -233,7 +234,6 @@ int main()
 { // Redirect Input
     string infileName; // Use if Input redirected
     string outfileName; // Use if output redirected
-    FILE** input = NULL;  // Recovering Cin
 
 
     // Command File Record entries
@@ -248,6 +248,17 @@ int main()
 
     StudentEsa* esa = NULL;   // Pointer to Enhanced Student Array
     Student sc; // A class to collect Students is generated
+
+    StudentEsa(StudentEsa & sep)
+    {
+        cmz = sep.cmz;
+        cnum = sep.cnum;
+        sap = new Student *[cmz];
+        for (int i = 0; i < cnum; i++)
+        {
+            sap[i] = sep.sap[i]; // This was wrong..
+        }
+    }
 
     int x=0; // Useful variables
     
@@ -322,3 +333,4 @@ int main()
 }
 
 // **********************************  End of test code  *************************************
+
