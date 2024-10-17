@@ -175,29 +175,113 @@ public:
 
 // class "StudentDQI   <Homework #2 - wraps (embeds) Extended Student Array (ESA) so it is invisible to external users of this class
 
-class StudentDQI {
+class StudentDQI
+{
 private:
-    StudentEsa* soa;  // Allocated Extended Student Array 
-          // These might be useful if your solution is for extra credit and positions the DQ in the MIDDLE of the Extended Array
-    unsigned int top; // Index value 1 above highest OA element used
-    unsigned int btm; // Index value 1 below lowest OA element used
+    StudentEsa *esa; // Internal ESA array
+    int front;       // Index for the front element
+    int back;        // Index for the back element
+    int maxSize;
+
 public:
-    StudentDQI(unsigned int); // Create a DQ with this initial size 
-    StudentDQI(StudentDQI&); // Equate this to an existing DQ (can use private parts directly)
-    ~StudentDQI(); // Destruct the DQI (free OA space)
+    // Constructor that initializes ESA and centers the deque indices
+    StudentDQI(int initialSize)
+    {
+        maxSize = initialSize * 2; // Double the size to handle both ends
+        esa = new StudentEsa(maxSize);
 
-    int getSize();  // Gets # elements (Student *) in the DQ
-    bool isEmpty(); // True if no elements held (“pop” will fail)
+        // Center the deque
+        front = initialSize - 1; // Front starts just before the middle
+        back = initialSize;      // Back starts at the middle
+    }
 
-    int pushFront(Student*); // Prepend a new element to the front
-    Student* popFront();      // Remove the first element and return it
-    Student* lookFront();      // Return the first element but do not remove it
+    ~StudentDQI()
+    {
+        delete esa; // Clean up ESA memory
+    }
 
-    int pushBack(Student*); // Append a new element to the back
-    Student* popBack();     // Remove the last element and return it
-    Student* lookBack();     // Return the last element but do not remove it
+    bool isEmpty() const
+    {
+        return front + 1 == back; // Deque is empty when front crosses back
+    }
+
+    int getSize() const
+    {
+        return back - front - 1; // Return the number of elements in the deque
+    }
+
+    // Push Front: Insert a new element at the front
+    int pushFront(Student *student)
+    {
+        if (front < 0)
+        {
+            return -1; // No more space at the front
+        }
+        esa->set(student, front); // Store the student at the front
+        front--;
+        return 0;
+    }
+
+    // Push Back: Insert a new element at the back
+    int pushBack(Student *student)
+    {
+        if (back >= maxSize)
+        {
+            return -1; // No more space at the back
+        }
+        esa->set(student, back); // Store the student at the back
+        back++;
+        return 0;
+    }
+
+    // Pop Front: Remove and return the element at the front
+    Student *popFront()
+    {
+        if (isEmpty())
+        {
+            std::cout << "Deque is empty, cannot popFront." << std::endl;
+            return nullptr;
+        }
+        front++;
+        Student *student = esa->get(front);
+        if (student)
+        {
+            std::cout << "Pop Front " << student->getId() << "  " << student->getName() << std::endl;
+        }
+        return student;
+    }
+
+    // Pop Back: Remove and return the element at the back
+    Student *popBack()
+    {
+        if (isEmpty())
+        {
+            return nullptr; // Deque is empty
+        }
+        back--;
+        return esa->get(back); // Return the back element
+    }
+
+    // Look at the front element without removing it
+    Student *lookFront() const
+    {
+        if (isEmpty())
+        {
+            return nullptr;
+        }
+        return esa->get(front + 1); // Return the front element
+    }
+
+    // Look at the back element without removing it
+    Student *lookBack() const
+    {
+        if (isEmpty())
+        {
+            return nullptr;
+        }
+        return esa->get(back - 1); // Return the back element
+    }
 };
-
 
 // **************************** End class StudentDQI ******************************
 
