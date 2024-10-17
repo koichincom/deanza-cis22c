@@ -1,5 +1,4 @@
-/// CIS22C-HM2B : This single file will contain all the code for Homework 2. Program execution begins and ends here (in main).
-//
+// CIS22C-HM2B : This single file will contain all the code for Homework 2. Program execution begins and ends here (in main).
 
 
 using namespace std;
@@ -7,7 +6,7 @@ using namespace std;
 #include <fstream>
 
 /*
-  The following code file is divided into 4 sections
+    The following code file is divided into 4 sections
 
 	1. The interface and code for Class Student  (supplied)
 	2. The interface and code for class StudentEsa  (insert your HM1 code here)
@@ -21,7 +20,7 @@ using namespace std;
 class Student
 {   // A VERY simple Student consisting only of the student's ID and Name
     // Both the interface and the code will be located here.
-   
+
 private:
     int sid; // Student ID
     string sname; // Full Name (Ex: KleinmanRon)
@@ -31,7 +30,7 @@ public:
         sid = 0; sname.clear();
     };
     Student(const Student& os) { // Copy constructor - overwrite internal variables
-         sid = os.sid;  sname = os.sname;
+        sid = os.sid;  sname = os.sname;
     };
     Student(int id, string name) { // Initializer Constructor - set internal variables
         sid = id; sname = name;
@@ -39,7 +38,6 @@ public:
     ~Student() { // Default Destructor - clear string
         sname.clear();
     };
-  
 
     //Getters 
     string getName() { return (sname); };
@@ -51,9 +49,123 @@ public:
 
 // 2.   ********************** Insert "class StudentEsa" code from your homework 1 assignment here
 
+class StudentEsa
+{
+private:
+    Student **sap; // Array of Student pointers
+    int cmz;       // Max size of the array
+    int cnum;      // Current number of elements
 
+public:
+    StudentEsa(int maxSize)
+    {
+        cmz = maxSize;
+        cnum = 0;
+        sap = new Student *[cmz]; // Allocate memory for array of pointers
+        for (int i = 0; i < cmz; ++i)
+        {
+            sap[i] = nullptr;
+        }
+    }
 
+    ~StudentEsa()
+    { // Destructor to clean up memory
+        for (int i = 0; i < cnum; ++i)
+        {
+            delete sap[i]; // Free memory for each Student
+        }
+        delete[] sap; // Free array of pointers
+    }
 
+    // Copy constructor for deep copy
+    StudentEsa(const StudentEsa &sep)
+    {
+        cmz = sep.cmz;
+        cnum = sep.cnum;
+        sap = new Student *[cmz];
+
+        for (int i = 0; i < cnum; i++)
+        {
+            if (sep.sap[i] != nullptr)
+            {
+                sap[i] = new Student(*sep.sap[i]); // Deep copy of the Student object
+            }
+            else
+            {
+                sap[i] = nullptr;
+            }
+        }
+    }
+
+    int append(Student *stud)
+    {
+        if (cnum < cmz)
+        {
+            sap[cnum] = stud; // Append the new student
+            cnum++;
+            return cnum;
+        }
+        return -1; // Array is full
+    }
+
+    int insert(Student *stud, int index)
+    {
+        if (index < 0 || index > cnum || cnum >= cmz)
+        {
+            return -1; // Invalid index or array full
+        }
+        for (int i = cnum; i > index; --i)
+        {
+            sap[i] = sap[i - 1]; // Shift elements to the right
+        }
+        sap[index] = stud;
+        cnum++;
+        return cnum;
+    }
+
+    int remove(int index)
+    {
+        if (index < 0 || index >= cnum)
+        {
+            return -1; // Invalid index
+        }
+        delete sap[index]; // Free memory for the student at the given index
+        for (int i = index; i < cnum - 1; ++i)
+        {
+            sap[i] = sap[i + 1]; // Shift elements to the left
+        }
+        cnum--;
+        return cnum;
+    }
+
+    int set(Student *stud, int index)
+    {
+        if (index < 0 || index >= cmz)
+        {
+            return -1; // Invalid index
+        }
+        if (sap[index] != nullptr)
+        {
+            delete sap[index]; // Free the old memory
+        }
+        sap[index] = stud; // Set new student
+        return index;
+    }
+
+    Student *get(int index) const
+    {
+        if (index < 0 || index >= cnum)
+        {
+            return nullptr; // Invalid index
+        }
+        return sap[index]; // Return the student at the given index
+    }
+
+    int getSize() const
+    {
+        return cnum; // Return the number of students in the array
+    }
+};
 
 //    ********************** End class StudentEsa ******************************
 
@@ -198,14 +310,15 @@ int main()
                 cout << "Pop Back " << stud->getId() << "  " << stud->getName() << endl;
                 delete (stud);
             }
-	    break;
+            break;
+
 
         case 'D':  // Look Back
             stud = dqi->lookBack();
             if (stud) { // Success ... don't delete Student
                 cout << "Look Back " << stud->getId() << "  " << stud->getName() << endl;
             }
-	    break;
+            break;
 
         default:
             cout << "Illegal Command:  " << command << endl;
