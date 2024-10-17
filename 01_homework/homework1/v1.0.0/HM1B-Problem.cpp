@@ -249,14 +249,25 @@ int main()
     StudentEsa* esa = NULL;   // Pointer to Enhanced Student Array
     Student sc; // A class to collect Students is generated
 
-    StudentEsa(StudentEsa & sep)
+    StudentEsa(const StudentEsa &sep)
     {
-        cmz = sep.cmz;
-        cnum = sep.cnum;
+        cmz = sep.cmz;   // Max size
+        cnum = sep.cnum; // Current number of elements
+
+        // Allocate memory for new array of Student pointers
         sap = new Student *[cmz];
+
+        // Copy each Student object (deep copy)
         for (int i = 0; i < cnum; i++)
         {
-            sap[i] = sep.sap[i]; // This was wrong..
+            if (sep.sap[i] != nullptr)
+            {
+                sap[i] = new Student(*sep.sap[i]); // Deep copy of the Student object
+            }
+            else
+            {
+                sap[i] = nullptr; // Handle nullptrs if necessary
+            }
         }
     }
 

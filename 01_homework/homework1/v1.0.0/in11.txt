@@ -10,10 +10,3 @@ I  3 89012 KofaxSandy
 A -1 99887 MarisRoger
 S  3 62109 FordWhitey
 I  0 10200 SkowronMoose
-
-
-
-
-
-
-
